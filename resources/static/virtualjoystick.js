@@ -7,9 +7,11 @@ var VirtualJoystick	= function(opts)
 	this._baseEl		= opts.baseElement	|| this._buildJoystickBase();
 	this._mouseSupport	= opts.mouseSupport !== undefined ? opts.mouseSupport : false;
 	this._stationaryBase	= opts.stationaryBase || false;
+	this._hideStick	= opts.hideStick !== undefined ? opts.hideStick : true;
 	this._baseX		= this._stickX = opts.baseX || 0
 	this._baseY		= this._stickY = opts.baseY || 0
 	this._limitStickTravel	= opts.limitStickTravel || false
+	this._limitStickTravelSquare	= opts.limitStickTravelSquare || false
 	this._stickRadius	= opts.stickRadius !== undefined ? opts.stickRadius : 100
 	this._useCssTransform	= opts.useCssTransform !== undefined ? opts.useCssTransform : false
 
@@ -147,11 +149,13 @@ VirtualJoystick.prototype.left	= function(){
 
 VirtualJoystick.prototype._onUp	= function()
 {
-	this._pressed	= false; 
-	this._stickEl.style.display	= "none";
-	
-	if(this._stationaryBase == false){	
-		this._baseEl.style.display	= "none";
+	this._pressed	= false;
+    if(this._hideStick == true){
+        this._stickEl.style.display	= "none";
+    }
+
+    if(this._stationaryBase == false){
+        this._baseEl.style.display	= "none";
 	
 		this._baseX	= this._baseY	= 0;
 		this._stickX	= this._stickY	= 0;
@@ -174,7 +178,12 @@ VirtualJoystick.prototype._onDown	= function(x, y)
 	if(this._limitStickTravel === true){
 		var deltaX	= this.deltaX();
 		var deltaY	= this.deltaY();
-		var stickDistance = Math.sqrt( (deltaX * deltaX) + (deltaY * deltaY) );
+		var stickDistance;
+        if (this._limitStickTravelSquare) {
+            stickDistance = Math.max(Math.abs(deltaX), Math.abs(deltaY));
+        } else {
+            stickDistance = Math.sqrt( (deltaX * deltaX) + (deltaY * deltaY) );
+        }
 		if(stickDistance > this._stickRadius){
 			var stickNormalizedX = deltaX / stickDistance;
 			var stickNormalizedY = deltaY / stickDistance;
@@ -197,7 +206,12 @@ VirtualJoystick.prototype._onMove	= function(x, y)
 		if(this._limitStickTravel === true){
 			var deltaX	= this.deltaX();
 			var deltaY	= this.deltaY();
-			var stickDistance = Math.sqrt( (deltaX * deltaX) + (deltaY * deltaY) );
+			var stickDistance;
+            if (this._limitStickTravelSquare) {
+                stickDistance = Math.max(Math.abs(deltaX), Math.abs(deltaY));
+            } else {
+                stickDistance = Math.sqrt( (deltaX * deltaX) + (deltaY * deltaY) );
+            }
 			if(stickDistance > this._stickRadius){
 				var stickNormalizedX = deltaX / stickDistance;
 				var stickNormalizedY = deltaY / stickDistance;

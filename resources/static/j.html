@@ -22,22 +22,24 @@
 	<body>
 		<div id="info">
 			<span id="result"></span>
-		</div> 
+		</div>
 		<script src="virtualjoystick.js"></script>
 		<script src="jquery-1.11.0.min.js"></script>
 		<script>
 			console.log("touchscreen is", VirtualJoystick.touchScreenAvailable() ? "available" : "not available");
 
-            var radius = 0.7 * Math.min(window.innerWidth, window.innerHeight);
-            var reference = 0.5 * Math.min(window.innerWidth, window.innerHeight);
+            var radius = 0.2 * Math.min(window.innerWidth, window.innerHeight);
+            var coefficient = 0.5 / radius;
 
 			var joystick	= new VirtualJoystick({
 				container	: document.body,
 				mouseSupport	: true,
                 stationaryBase: true,
-                baseX: window.innerWidth * 0.75,
-                baseY: window.innerHeight * 0.5,
+                hideStick: false,
+                baseX: window.innerWidth - 1.25*radius,
+                baseY: window.innerHeight - 1.25*radius,
                 limitStickTravel: true,
+                limitStickTravelSquare: true,
                 stickRadius: radius
             });
 			joystick.addEventListener('touchStart', function(){
@@ -50,8 +52,8 @@
             var lastKnownX1 = 0;
             var lastKnownY1 = 0;
 			setInterval(function(){
-                var newX1 = joystick.deltaX() / reference + 0.5;
-                var newY1 = joystick.deltaY() / reference + 0.5;
+                var newX1 = joystick.deltaX() * coefficient + 0.5;
+                var newY1 = joystick.deltaY() * coefficient + 0.5;
                 if (lastKnownX1 != newX1 || lastKnownY1 != newY1) {
                     lastKnownX1 = newX1;
                     lastKnownY1 = newY1;
@@ -59,7 +61,9 @@
                     outputEl.innerHTML	= '<b>Result:</b> '
                             + ' dx:'+newX1
                             + ' dy:'+newY1;
-                    $.post('/rest/sliders', {x1: newX1, y1: newY1, x2: 0, y2: 0, x3: 0, y3: 0});
+                    // axes can be remapped in DroidPad server;
+                    // on my machine x1/y1 axes don't work linearly so I don't use them directly
+                    $.post('/rest/sliders', {x1: 0, y1: 0, x2: 0, y2: newX1, x3: newY1, y3: 0});
                 }
 			}, 1/30 * 1000);
 		</script>
