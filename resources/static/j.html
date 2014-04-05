@@ -1,0 +1,67 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		
+		<style>
+		body {
+			overflow	: hidden;
+			padding		: 0;
+			margin		: 0;
+			background-color: #BBB;
+		}
+		#info {
+			position	: absolute;
+			top		: 0px;
+			width		: 100%;
+			padding		: 5px;
+			text-align	: center;
+		}
+		</style>
+	</head>
+	<body>
+		<div id="info">
+			<span id="result"></span>
+		</div> 
+		<script src="virtualjoystick.js"></script>
+		<script src="jquery-1.11.0.min.js"></script>
+		<script>
+			console.log("touchscreen is", VirtualJoystick.touchScreenAvailable() ? "available" : "not available");
+
+            var radius = 0.7 * Math.min(window.innerWidth, window.innerHeight);
+            var reference = 0.5 * Math.min(window.innerWidth, window.innerHeight);
+
+			var joystick	= new VirtualJoystick({
+				container	: document.body,
+				mouseSupport	: true,
+                stationaryBase: true,
+                baseX: window.innerWidth * 0.75,
+                baseY: window.innerHeight * 0.5,
+                limitStickTravel: true,
+                stickRadius: radius
+            });
+			joystick.addEventListener('touchStart', function(){
+				console.log('down')
+			})
+			joystick.addEventListener('touchEnd', function(){
+				console.log('up')
+			})
+
+            var lastKnownX1 = 0;
+            var lastKnownY1 = 0;
+			setInterval(function(){
+                var newX1 = joystick.deltaX() / reference + 0.5;
+                var newY1 = joystick.deltaY() / reference + 0.5;
+                if (lastKnownX1 != newX1 || lastKnownY1 != newY1) {
+                    lastKnownX1 = newX1;
+                    lastKnownY1 = newY1;
+                    var outputEl	= document.getElementById('result');
+                    outputEl.innerHTML	= '<b>Result:</b> '
+                            + ' dx:'+newX1
+                            + ' dy:'+newY1;
+                    $.post('/rest/sliders', {x1: newX1, y1: newY1, x2: 0, y2: 0, x3: 0, y3: 0});
+                }
+			}, 1/30 * 1000);
+		</script>
+	</body>
+</html>
