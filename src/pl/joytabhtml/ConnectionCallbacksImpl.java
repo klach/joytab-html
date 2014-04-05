@@ -1,4 +1,4 @@
-package pl.htmljoytab;
+package pl.joytabhtml;
 
 import uk.digitalsquid.droidpad.ConnectionCallbacks;
 import uk.digitalsquid.droidpad.Vec3;
