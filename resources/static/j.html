@@ -8,7 +8,7 @@
 			overflow	: hidden;
 			padding		: 0;
 			margin		: 0;
-			background-color: #BBB;
+			background-color: #222;
 		}
 		#info {
 			position	: absolute;
@@ -20,9 +20,9 @@
 		</style>
 	</head>
 	<body>
-		<div id="info">
+		<!--<div id="info">
 			<span id="result"></span>
-		</div>
+		</div>-->
 		<script src="virtualjoystick.js"></script>
 		<script src="jquery-1.11.0.min.js"></script>
 		<script>
@@ -42,28 +42,56 @@
                 limitStickTravelSquare: true,
                 stickRadius: radius
             });
-			joystick.addEventListener('touchStart', function(){
-				console.log('down')
-			})
-			joystick.addEventListener('touchEnd', function(){
-				console.log('up')
-			})
+            joystick.addEventListener('touchStartValidation', function(event){
+                var touch	= event.changedTouches[0];
+                if( touch.pageX < window.innerWidth/2 )	return false;
+                return true
+            });
+//            joystick.addEventListener('touchStart', function(){
+//				console.log('down')
+//			})
+//			joystick.addEventListener('touchEnd', function(){
+//				console.log('up')
+//			})
+
+            var joystick2	= new VirtualJoystick({
+                container	: document.body,
+                mouseSupport	: true,
+                stationaryBase: true,
+                hideStick: false,
+                baseX: 1.25*radius,
+                baseY: window.innerHeight - 1.25*radius,
+                limitStickTravel: true,
+                limitStickTravelSquare: true,
+                stickRadius: radius
+            });
+            joystick2.addEventListener('touchStartValidation', function(event){
+                var touch	= event.changedTouches[0];
+                if( touch.pageX >= window.innerWidth/2 )	return false;
+                return true
+            });
 
             var lastKnownX1 = 0;
             var lastKnownY1 = 0;
+            var lastKnownX2 = 0;
+            var lastKnownY2 = 0;
 			setInterval(function(){
                 var newX1 = joystick.deltaX() * coefficient + 0.5;
                 var newY1 = joystick.deltaY() * coefficient + 0.5;
-                if (lastKnownX1 != newX1 || lastKnownY1 != newY1) {
+                var newX2 = joystick2.deltaX() * coefficient + 0.5;
+                var newY2 = joystick2.deltaY() * coefficient + 0.5;
+                if (lastKnownX1 != newX1 || lastKnownY1 != newY1 || lastKnownX2 != newX2 || lastKnownY2 != newY2) {
                     lastKnownX1 = newX1;
                     lastKnownY1 = newY1;
-                    var outputEl	= document.getElementById('result');
-                    outputEl.innerHTML	= '<b>Result:</b> '
-                            + ' dx:'+newX1
-                            + ' dy:'+newY1;
+                    lastKnownX2 = newX2;
+                    lastKnownY2 = newY2;
+//                    var outputEl	= document.getElementById('result');
+//                    outputEl.innerHTML	= '<b>Result:</b> '
+//                            + ' dx:'+newX1
+//                            + ' dy:'+newY1;
                     // axes can be remapped in DroidPad server;
-                    // on my machine x1/y1 axes don't work linearly so I don't use them directly
-                    $.post('/rest/sliders', {x1: 0, y1: 0, x2: 0, y2: newX1, x3: newY1, y3: 0});
+                    // on my machine x1 axis doesn't work linearly (don't know why?) so I don't use it directly
+                    $.post('/rest/sliders', {x1: 0, y1: 0, x2: newX2, y2: newX1, x3: newY1, y3: newY2});
                 }
 			}, 1/30 * 1000);
 		</script>
