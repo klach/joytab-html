@@ -15,15 +15,15 @@ Bases on
 How to use it?
 ==============
 
-* Run joytab-html (Java required): run.bat or run.sh depending on operating system
+* Run joytab-html (Java required): ```run.bat``` or ```run.sh``` depending on operating system
 * Run PC client of [DroidPad](http://www.digitalsquid.co.uk/droidpad/)
 * From DroidPad connect to joytab-html: double click on "Custom device", enter 127.0.0.1 as IP, port 3141, do not check "secure connection"
-* Point a browser on tablet or phone to http://{your computer's IP}:8080/joy/j.html
+* Point a browser on tablet or phone to ```http://{your computer's IP}:8080/joy/j.html```
 
 How to build it?
 ================
 
-TBD
+Build script for [Apache Ant](http://ant.apache.org/) attached. Just type ```ant``` in a console.
 
 Axes mapping
 ============
