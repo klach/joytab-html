@@ -31,18 +31,20 @@ Axes mapping
 On my machine the first axis for some reason doesn't work linearly (don't know why?) so I don't use it directly.
 
 The place where touches are mapped to axes is one of last lines in ```resources/static/j.html```:
-```{x1: 0, y1: 0, x2: newX2, y2: newX1, x3: newY1, y3: newY2}```.
+```{x1: 0, y1: 0, x2: newY2, y2: newX2, x3: newX1, y3: newY1}```.
 
-That should be later remapped in DroidPad PC client (Edit -> Reorder axes). Here's the mapping I use:
+That should be later remapped in DroidPad PC client (Edit -> Reorder axes) according to needs. Here's the mapping I use:
 
 ```
 Axis 1 -> None
 Axis 2 -> None
 Axis 3 -> Axis 3
-Axis 4 -> Axis 1
-Axis 5 -> Axis 2
-Axis 6 -> Axis 6
+Axis 4 -> Axis 4
+Axis 5 -> Axis 1
+Axis 6 -> Axis 2
 ```
+
+Such a configuration should allow playing [FlightGear](http://www.flightgear.org/) but axis for rudder is not detected automatically.
 
 If you occasionally play [Falcon BMS](http://www.benchmarksims.org/), here's the mapping to put in ```Falcon BMS 4.32\User\Config\DeviceDefaults.txt```:
 
@@ -51,8 +53,8 @@ If you occasionally play [Falcon BMS](http://www.benchmarksims.org/), here's the
 GUID = {D6ADD801-0000-0000-0000-504944564944}
 AXIS_PITCH = Y
 AXIS_ROLL = X
-AXIS_YAW = Z
-AXIS_THROTTLE = RZ
+AXIS_YAW = RX
+AXIS_THROTTLE = Z
 ```
 
 Tested with
