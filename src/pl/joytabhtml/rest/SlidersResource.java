@@ -26,6 +26,7 @@ public class SlidersResource extends ServerResource {
         float y2 = Float.parseFloat(form.getFirstValue("y2"));
         float x3 = Float.parseFloat(form.getFirstValue("x3"));
         float y3 = Float.parseFloat(form.getFirstValue("y3"));
+        int pov = Integer.parseInt(form.getFirstValue("pov"));
         JoyTabApplication app = (JoyTabApplication)getApplication();
         app.getSlider1().setPosition(x1, y1);
         app.getSlider2().setPosition(x2, y2);
@@ -45,7 +46,7 @@ public class SlidersResource extends ServerResource {
             dataStream.writeInt(0); // dial
             dataStream.writeInt(0); // buttons
             dataStream.writeInt(vJoyContinuousPovValue(y2)); // continuous POV
-            dataStream.writeInt(0); // discrete POVs
+            dataStream.writeInt(0xfffffff0 | (0x0000000f & pov)); // discrete POVs
             DatagramPacket packet = new DatagramPacket(baos.toByteArray(), baos.size(),
                     address, 1608);
 

@@ -44,7 +44,7 @@
 			});
 			joystick.addEventListener('touchStartValidation', function(event){
 				var touch	= event.changedTouches[0];
-				if( touch.pageX < window.innerWidth/2 )	return false;
+				if( touch.pageX < window.innerWidth/2 || touch.pageY < 250 )	return false;
 				return true
 			});
 //			joystick.addEventListener('touchStart', function(){
@@ -67,7 +67,23 @@
 			});
 			joystick2.addEventListener('touchStartValidation', function(event){
 				var touch	= event.changedTouches[0];
-				if( touch.pageX >= window.innerWidth/2 )	return false;
+				if( touch.pageX >= window.innerWidth/2 || touch.pageY < 250 )	return false;
+				return true
+			});
+
+			var joystick3	= new VirtualJoystick({
+				container	: document.body,
+				mouseSupport	: true,
+				stationaryBase: true,
+				hideStick: true,
+				baseX: 100,
+				baseY: 100,
+				limitStickTravel: true,
+				stickRadius: 30
+			});
+			joystick3.addEventListener('touchStartValidation', function(event){
+				var touch	= event.changedTouches[0];
+				if( touch.pageX >= window.innerWidth/2 || touch.pageY >= 250 )	return false;
 				return true
 			});
 
@@ -75,23 +91,26 @@
 			var lastKnownY1 = 0;
 			var lastKnownX2 = 0;
 			var lastKnownY2 = 0;
+			var lastKnownPov = -1;
 			setInterval(function(){
 				var newX1 = joystick.deltaX() * coefficient + 0.5;
 				var newY1 = joystick.deltaY() * coefficient + 0.5;
 				var newX2 = joystick2.deltaX() * coefficient + 0.5;
 				var newY2 = joystick2.deltaY() * coefficient + 0.5;
-				if (lastKnownX1 != newX1 || lastKnownY1 != newY1 || lastKnownX2 != newX2 || lastKnownY2 != newY2) {
+				var newPov = joystick3.up() ? 0 : (joystick3.right() ? 1 : (joystick3.down() ? 2 : (joystick3.left() ? 3 : -1)));
+				if (lastKnownX1 != newX1 || lastKnownY1 != newY1 || lastKnownX2 != newX2 || lastKnownY2 != newY2 || lastKnownPov != newPov) {
 					lastKnownX1 = newX1;
 					lastKnownY1 = newY1;
 					lastKnownX2 = newX2;
 					lastKnownY2 = newY2;
+					lastKnownPov = newPov;
 //					var outputEl	= document.getElementById('result');
 //					outputEl.innerHTML	= '<b>Result:</b> '
 //							+ ' dx:'+newX1
 //							+ ' dy:'+newY1;
 					// axes can be remapped in DroidPad PC client;
 					// on my machine x1 axis doesn't work linearly (don't know why?) so I don't use it directly
-					$.post('/rest/sliders', {x1: 0, y1: 0, x2: newY2, y2: newX2, x3: newX1, y3: newY1});
+					$.post('/rest/sliders', {x1: 0, y1: 0, x2: newY2, y2: newX2, x3: newX1, y3: newY1, pov: newPov});
 				}
 			}, 1/30 * 1000);
 		</script>
