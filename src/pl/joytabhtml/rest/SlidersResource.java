@@ -14,6 +14,7 @@ import java.net.InetAddress;
 public class SlidersResource extends ServerResource {
 
     private static final int VJOY_AXIS_MAX = 32768;
+    private static final int VJOY_CONTINUOUS_POV = 36000;
     private final InetAddress address = InetAddress.getLoopbackAddress();
 
     @Post
@@ -43,7 +44,7 @@ public class SlidersResource extends ServerResource {
             dataStream.writeInt(0); // slider
             dataStream.writeInt(0); // dial
             dataStream.writeInt(0); // buttons
-            dataStream.writeInt(0); // continuous POV
+            dataStream.writeInt(vJoyContinuousPovValue(y2)); // continuous POV
             dataStream.writeInt(0); // discrete POVs
             DatagramPacket packet = new DatagramPacket(baos.toByteArray(), baos.size(),
                     address, 1608);
@@ -65,5 +66,11 @@ public class SlidersResource extends ServerResource {
         if (value <= 0f) return 0;
         if (value >= 1f) return VJOY_AXIS_MAX;
         return (int)(value * VJOY_AXIS_MAX);
+    }
+
+    private int vJoyContinuousPovValue(float value) {
+        if (value <= 0f) return 0;
+        if (value >= 1f) return -1; // neutral
+        return (int)(value * VJOY_CONTINUOUS_POV);
     }
 }
