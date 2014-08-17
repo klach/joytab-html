@@ -134,7 +134,7 @@ public class Slider extends Item {
 //		}
 	}
 
-	public void setPosition(float x, float y) {
+	public synchronized void setPosition(float x, float y) {
 		if(type == Orientation.X || type == Orientation.Both)
 		{
 			tmpAx = ((x - 0.5f) * 2f * SLIDER_TOT);
